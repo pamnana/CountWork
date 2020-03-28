@@ -1,2 +1,0 @@
-# CountWork
-Project of PWA
