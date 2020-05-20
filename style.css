@@ -1,0 +1,16 @@
+*{
+  font-family: 'Athiti', sans-serif;
+}
+body{
+  background-image:linear-gradient(to right, #009cf3, #16d6d9);
+}
+.card{
+  margin: auto;
+  border-radius: 100%;
+  display: block;
+  top:20vh;
+  right:0;
+  bottom:0;
+  left:0;
+  position:absolute;
+}
