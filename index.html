@@ -6,6 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Count Work</title>
 
+    <!-- notification -->
+    <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async=""></script>
+    <script>
+        var OneSignal = window.OneSignal || [];
+        OneSignal.push(function () {
+            OneSignal.init({
+                appId: "ab285cd5-8bef-456c-9586-966211649131",
+            });
+        });
+    </script>
+
     <!-- link sheet -->
     <link rel="stylesheet" type="text/css" href="style.css">
     <link rel="icon" href="icon.ico" type="image/icon type">
@@ -46,21 +57,214 @@
             });
         }
     </script>
+
 </head>
 
-<body>
-    <div class='card' style='width: 18rem;'>
-        <div class='card-body'>
-            <h1 id='font-en'> Count Work </h1>
-            <h5>กรุณาล็อกอินเพื่อเข้าสู่ระบบ</h5>
-            <form>
-                <button type="submit" class="btn btn-primary" onclick="onSignInButtonClick()"><img src="google.png" width="10%" height="auto"> Google Account</button><br>
-                ไม่อยากล็อกอินหรอ? <a href="CountDown.html">กดตรงนี้เลย</a>
-                <p style='font-size: smaller;color: red;'>
-                    **ในกรณีที่ไม่ล็อกอินระบบจะไม่มีการบันทึกข้อมูลหากออกจากเว็บ**</p>
-            </form>
+<body onload="loadTableData()">
+
+    <nav>CountWork | รวมกิจกรรมสุดเจ๋งของคุณ</nav>
+
+    <div id="page-main" class="page">
+        <div class='card'>
+            <div class='card-body'>
+                <h2 class="text-center">My Activity</h2>
+                <h5 lass="text-center">นับถอยหลังกิจกรรมที่จะมาถึงของคุณ</h5>
+                <p style="font-size: smaller;">*สวัสดี ถ้าคุณยังไม่มีกิจกรรม ลองกดเพิ่มกิจกรรมของคุณดูสิ!*</p>
+                <table class="table" id="activitytable">
+                    <tbody>
+                    </tbody>
+                </table>
+                <button type="submit" class="btn btn-primary"
+                    onclick="mockupClick('page-main','page-add')">เพิ่มกิจกรรมของคุณ</button><br>
+            </div>
         </div>
     </div>
+    <div id="page-add" class="page">
+        <div class='card'>
+            <div class='card-body'>
+                <h2 class="text-center">Add New Activity</h2>
+                <h5 class="text-center">เพิ่มกิจกรรมที่คุณสนใจ</h5>
+                <form>
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" class="form-control" id="nameactivity" placeholder='กรอกชื่อกิจกรรม' />
+                    </div>
+                    <div class="form-group">
+                        <label>Date</label>
+                        <input type='date' class="form-control" id="dateactivity" />
+                    </div>
+                    <div class="form-group">
+                        <label>Time</label>
+                        <p style='font-size: smaller; color:silver;'>เวลาจะถูกตั้งไว้ที่ 00.00 AM
+                            หากไม่ได้ใส่เวลาที่ต้องการ</p>
+                        <input type='time' class="form-control" id="timeactivity" />
+                    </div>
+                    <p style='color: red;'>*เมื่อถึงวันที่เริ่มกิจกรรมจะทำการแจ้งเตือนที่หน้าจอ*</p>
+                </form>
+                <button type="submit" id="complete" class="btn btn-primary"
+                    onclick="addActivity()">เพิ่มกิจกรรมเลย!</button>
+
+                <!-- pop-up -->
+                <div class="hover_bkgr_fricc">
+                    <span class="helper"></span>
+                    <div>
+                        <div class="popupCloseButton">&times;</div>
+                        <p>Add any HTML content<br />inside the popup box!</p>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-warning"
+                    onclick="mockupClick('page-add','page-main')">กลับไปหน้ากิจกรรมของฉัน</button><br>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        if (localStorage.getItem("dataSave") === null) {
+            var data = []
+            var i = 1
+        } else {
+            var data = JSON.parse(localStorage.getItem("dataSave"));
+            var i = parseInt(localStorage.getItem("numI"));
+        }
+        function addActivity() {
+            var nameact = document.getElementById("nameactivity").value;
+            var dateact = document.getElementById("dateactivity").value;
+            var timeact = document.getElementById("timeactivity").value;
+
+            console.log(dateact)
+            console.log(timeact)
+            if (nameact != "" && dateact != "") {
+                //check limit time
+
+                var now = new Date().getTime();
+                var countDownDate = new Date(dateact + "," + timeact).getTime();
+                var distance = countDownDate - now;
+                if (distance > 0) {
+                    var table = document.getElementById("activitytable");
+                    var row = table.insertRow(-1);
+                    row.id = 'activity' + i;
+                    var cell1 = row.insertCell(0);
+                    var cell2 = row.insertCell(1);
+                    var cell3 = row.insertCell(2);
+                    cell1.innerHTML = nameact;
+                    data.push([nameact, dateact, timeact, row.id]);
+                    console.log(data);
+
+                    //delete value in input
+                    document.getElementById("nameactivity").value = "";
+                    document.getElementById("dateactivity").value = "";
+                    document.getElementById("timeactivity").value = "";
+
+
+                    //add countdown
+                    //create time
+                    console.log(countDownDate)
+                    var x = setInterval(function () {
+                        var now = new Date().getTime();
+                        var distance = countDownDate - now;
+                        var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                        var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                        var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                        cell2.innerHTML = days + "d " + hours + "h "
+                            + minutes + "m " + seconds + "s ";
+
+                        if (distance < 0) {
+                            clearInterval(x);
+                        }
+                    }, 1000);
+                    //create button
+                    cell3.innerHTML = "<button class='btn btn-danger' onclick='deleteRowTable(this)'>Delete</button>"
+
+                    i += 1;
+                    //go back
+                    mockupClick('page-add', 'page-main')
+                    //save local storage
+                    localStorage.setItem("dataSave", JSON.stringify(data))
+                    localStorage.setItem("numI", i)
+                    //pop-up up
+
+                    $(window).load(function () {
+                        $('#complete').click(function () {
+                            $('.hover_bkgr_fricc').show();
+                        });
+                        $('.hover_bkgr_fricc').click(function () {
+                            $('.hover_bkgr_fricc').hide();
+                        });
+                        $('.popupCloseButton').click(function () {
+                            $('.hover_bkgr_fricc').hide();
+                        });
+                    });
+                } else {
+                    alert("กรุณาตั้งวันเวลาที่เป็นอนาคต");
+                }
+            } else {
+                alert("กรุณากรอกชื่อกิจกรรม");
+            }
+
+        }
+
+        //switch page
+        function mockupClick(pageToHide, pageToShow) {
+            document.querySelector('#' + pageToHide).style.display = "none";
+            document.querySelector('#' + pageToShow).style.display = "block";
+        }
+
+        //delete row
+        function deleteRowTable(row) {
+            console.log($(row).parents("tr")[0].id)
+            for (a = 0; a < data.length; a++) {
+                if (data[a][3] == $(row).parents("tr")[0].id) {
+                    data.splice(a, 1)
+                    console.log(data);
+                    localStorage.setItem("dataSave", JSON.stringify(data))
+                    localStorage.setItem("numI", i)
+                }
+
+            }
+
+            $(row).parents("tr").remove();
+
+        }
+        function loadTableData() {
+            if (localStorage.getItem("dataSave") != null) {
+                var dataLoad = JSON.parse(localStorage.getItem("dataSave"));
+                console.log(dataLoad.length)
+                for (b = 0; b < dataLoad.length; b++) {
+                    var table = document.getElementById("activitytable");
+                    var row = table.insertRow(-1);
+                    row.id = dataLoad[b][3]
+                    var cell1 = row.insertCell(0);
+                    var cell2 = row.insertCell(1);
+                    var cell3 = row.insertCell(2);
+                    cell1.innerHTML = dataLoad[b][0];
+                    console.log(cell1.innerHTML)
+
+                    //cell 2
+                    var countDownDate = new Date(dataLoad[b][1] + "," + dataLoad[b][2]).getTime();
+                    setInterval(function () {
+                        var now = new Date().getTime();
+                        var distance = countDownDate - now;
+                        var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                        var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                        var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                        cell2.innerHTML = days + "d " + hours + "h "
+                            + minutes + "m " + seconds + "s ";
+
+                        if (distance < 0) {
+                            clearInterval(this);
+                            cell2.innerHTML = "0 d 0 h 0 m 0 s"
+                        }
+                    }, 1000);
+                    cell3.innerHTML = "<button class='btn btn-danger' onclick='deleteRowTable(this)'>Delete</button>"
+                    console.log(cell2.innerHTML)
+                }
+            }
+        } ห
+
+    </script>
 </body>
 
 </html>
