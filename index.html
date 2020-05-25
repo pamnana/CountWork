@@ -87,6 +87,18 @@
                     onclick="mockupClick('page-main','page-add')">เพิ่มกิจกรรมของคุณ</button><br>
             </div>
         </div>
+
+        <!-- pop-up -->
+        <div class="popup-container text-center">
+            <div class="popup">
+                <div class="popup-close">x</div>
+                <div class="popup-content">
+                    <img class="img-fluid" src="clock.png" width="30%">
+                    <h4>ถึงเวลากิจกรรมของคุณแล้ว!</h4>
+                </div>
+            </div>
+        </div>
+
     </div>
     <div id="page-add" class="page">
         <div class='card'>
@@ -112,19 +124,6 @@
                 </form>
                 <button type="submit" id="complete" class="btn btn-primary"
                     onclick="addActivity()">เพิ่มกิจกรรมเลย!</button>
-
-                <!-- pop-up -->
-                <!-- <div id="myModal" class="modal"> -->
-
-                    <!-- Modal content -->
-                    <!-- <div class="modal-content auto">
-                        <span class="close">&times;</span>
-                        <img src="correct.png" style="width:15%;align-self: center;">
-                        <p style="font-size: x-large;text-align: center;">Complete</p>
-                    </div> -->
-
-                <!-- </div> -->
-
                 <button type="submit" class="btn btn-warning"
                     onclick="mockupClick('page-add','page-main')">กลับไปหน้ากิจกรรมของฉัน</button><br>
             </div>
@@ -141,12 +140,14 @@
             var data = JSON.parse(localStorage.getItem("dataSave"));
             var i = parseInt(localStorage.getItem("numI"));
         }
+
+        //switch page
+        function mockupClick(pageToHide, pageToShow) {
+            document.querySelector('#' + pageToHide).style.display = "none";
+            document.querySelector('#' + pageToShow).style.display = "block";
+        }
+
         function addActivity() {
-            //var modal = document.getElementById("myModal");
-            //var btn = document.getElementById("complete");
-            //var span = document.getElementsByClassName("close")[0];
-            //var checkpopup = 0;
-            //console.log(checkpopup);
 
             var nameact = document.getElementById("nameactivity").value;
             var dateact = document.getElementById("dateactivity").value;
@@ -177,11 +178,6 @@
                     document.getElementById("dateactivity").value = "";
                     document.getElementById("timeactivity").value = "";
 
-                    //checkpopup
-                    //checkpopup += 1;
-
-                    //add countdown
-                    //create time
                     console.log(countDownDate)
                     var x = setInterval(function () {
                         var now = new Date().getTime();
@@ -195,6 +191,8 @@
 
                         if (distance < 0) {
                             clearInterval(x);
+                            clearInterval(deleteRowTable(cell2));
+                            clearInterval(setpopup());
                         }
                     }, 1000);
                     //create button
@@ -205,6 +203,7 @@
                     //save local storage
                     localStorage.setItem("dataSave", JSON.stringify(data))
                     localStorage.setItem("numI", i)
+                    mockupClick('page-add', 'page-main');
 
                 } else {
                     alert("กรุณาตั้งวันเวลาที่เป็นอนาคต");
@@ -212,34 +211,10 @@
             } else {
                 alert("กรุณากรอกชื่อกิจกรรม");
             }
-
-            //pop-up up
-            // if (checkpopup == 1) {
-            //     console.log(checkpopup);
-            //     modal.style.display = "block";
-            //     span.onclick = function () {
-            //         modal.style.display = "none";
-            //     }
-            //     window.onclick = function (event) {
-            //         if (event.target == modal) {
-            //             modal.style.display = "none";
-            //         }
-            //     }
-            //     checkpopup -= 1;
-            //     //go back
-            //     mockupClick('page-add', 'page-main')
-            // }
-        }
-
-        //switch page
-        function mockupClick(pageToHide, pageToShow) {
-            document.querySelector('#' + pageToHide).style.display = "none";
-            document.querySelector('#' + pageToShow).style.display = "block";
         }
 
         //delete row
         function deleteRowTable(row) {
-            console.log($(row).parents("tr")[0].id)
             for (a = 0; a < data.length; a++) {
                 if (data[a][3] == $(row).parents("tr")[0].id) {
                     data.splice(a, 1)
@@ -252,6 +227,12 @@
             $(row).parents("tr").remove();
 
         }
+
+        //pop-up
+        const button = document.querySelector('#complete');
+        const popup = document.querySelector('.popup-container');
+        const close = document.querySelector('.popup-close')
+
         function loadTableData() {
             if (localStorage.getItem("dataSave") != null) {
                 var dataLoad = JSON.parse(localStorage.getItem("dataSave"));
@@ -287,6 +268,18 @@
                     console.log(cell2.innerHTML)
                 }
             }
+        }
+
+        //pop-up
+        function setpopup() {
+            popup.style.display = 'flex';
+            close.addEventListener('click', () => {
+                popup.style.display = 'none';
+            })
+
+            popup.addEventListener('click', () => {
+                popup.style.display = 'none';
+            })
         }
 
     </script>
