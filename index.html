@@ -4,6 +4,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- addtohomescreen -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="shortcut icon" href="icon.ico" />
+    <link rel="apple-touch-icon" sizes="72x72" href="alarm.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="alarm.png">
+    <link rel="apple-touch-icon" href="alarm.png">
+    <meta name="apple-mobile-web-app-title" content="CountWork">
+
     <title>Count Work</title>
 
     <!-- notification -->
@@ -105,13 +114,16 @@
                     onclick="addActivity()">เพิ่มกิจกรรมเลย!</button>
 
                 <!-- pop-up -->
-                <div class="hover_bkgr_fricc">
-                    <span class="helper"></span>
-                    <div>
-                        <div class="popupCloseButton">&times;</div>
-                        <p>Add any HTML content<br />inside the popup box!</p>
-                    </div>
-                </div>
+                <!-- <div id="myModal" class="modal"> -->
+
+                    <!-- Modal content -->
+                    <!-- <div class="modal-content auto">
+                        <span class="close">&times;</span>
+                        <img src="correct.png" style="width:15%;align-self: center;">
+                        <p style="font-size: x-large;text-align: center;">Complete</p>
+                    </div> -->
+
+                <!-- </div> -->
 
                 <button type="submit" class="btn btn-warning"
                     onclick="mockupClick('page-add','page-main')">กลับไปหน้ากิจกรรมของฉัน</button><br>
@@ -120,6 +132,8 @@
     </div>
 
     <script>
+        //add pop up
+        //localStorage
         if (localStorage.getItem("dataSave") === null) {
             var data = []
             var i = 1
@@ -128,6 +142,12 @@
             var i = parseInt(localStorage.getItem("numI"));
         }
         function addActivity() {
+            //var modal = document.getElementById("myModal");
+            //var btn = document.getElementById("complete");
+            //var span = document.getElementsByClassName("close")[0];
+            //var checkpopup = 0;
+            //console.log(checkpopup);
+
             var nameact = document.getElementById("nameactivity").value;
             var dateact = document.getElementById("dateactivity").value;
             var timeact = document.getElementById("timeactivity").value;
@@ -139,8 +159,9 @@
 
                 var now = new Date().getTime();
                 var countDownDate = new Date(dateact + "," + timeact).getTime();
-                var distance = countDownDate - now;
-                if (distance > 0) {
+                var checkdistance = countDownDate - now;
+                if (checkdistance > 0) {
+                    //add tr on table
                     var table = document.getElementById("activitytable");
                     var row = table.insertRow(-1);
                     row.id = 'activity' + i;
@@ -156,6 +177,8 @@
                     document.getElementById("dateactivity").value = "";
                     document.getElementById("timeactivity").value = "";
 
+                    //checkpopup
+                    //checkpopup += 1;
 
                     //add countdown
                     //create time
@@ -178,24 +201,11 @@
                     cell3.innerHTML = "<button class='btn btn-danger' onclick='deleteRowTable(this)'>Delete</button>"
 
                     i += 1;
-                    //go back
-                    mockupClick('page-add', 'page-main')
+
                     //save local storage
                     localStorage.setItem("dataSave", JSON.stringify(data))
                     localStorage.setItem("numI", i)
-                    //pop-up up
 
-                    $(window).load(function () {
-                        $('#complete').click(function () {
-                            $('.hover_bkgr_fricc').show();
-                        });
-                        $('.hover_bkgr_fricc').click(function () {
-                            $('.hover_bkgr_fricc').hide();
-                        });
-                        $('.popupCloseButton').click(function () {
-                            $('.hover_bkgr_fricc').hide();
-                        });
-                    });
                 } else {
                     alert("กรุณาตั้งวันเวลาที่เป็นอนาคต");
                 }
@@ -203,6 +213,22 @@
                 alert("กรุณากรอกชื่อกิจกรรม");
             }
 
+            //pop-up up
+            // if (checkpopup == 1) {
+            //     console.log(checkpopup);
+            //     modal.style.display = "block";
+            //     span.onclick = function () {
+            //         modal.style.display = "none";
+            //     }
+            //     window.onclick = function (event) {
+            //         if (event.target == modal) {
+            //             modal.style.display = "none";
+            //         }
+            //     }
+            //     checkpopup -= 1;
+            //     //go back
+            //     mockupClick('page-add', 'page-main')
+            // }
         }
 
         //switch page
@@ -223,7 +249,6 @@
                 }
 
             }
-
             $(row).parents("tr").remove();
 
         }
@@ -262,7 +287,7 @@
                     console.log(cell2.innerHTML)
                 }
             }
-        } ห
+        }
 
     </script>
 </body>
